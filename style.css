@@ -194,3 +194,10 @@ button.primary:active:not(:disabled) { transform: translateY(3px); box-shadow: n
 .timer { font-weight: 800; }
 button.ghost { border: 2px solid var(--edge); color: var(--ink); font-weight: 600; }
 dialog { border: 2px solid var(--edge); border-radius: 18px; box-shadow: 6px 6px 0 var(--pink); }
+
+/* ===== Stałe opłaty i przegląd wydatków ===== */
+.list .chk { margin: 0; }
+.chk.paid span { text-decoration: line-through; opacity: .6; }
+.chk.late span { color: var(--warn); font-weight: 600; }
+.flow-row { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; font-weight: 600; }
+.flow-row + .bar { margin: 4px 0 0; }
