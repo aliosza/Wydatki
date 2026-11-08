@@ -119,6 +119,7 @@
         <select id="spType">
           <option value="daily">Codzienne życie</option>
           <option value="fun">Przyjemność</option>
+          <option value="goals">Cel specjalny (np. wakacje)</option>
         </select>
         <button id="spAdd" class="primary">Dodaj wydatek</button>
       </div>
@@ -163,8 +164,19 @@
   <div class="row">
     <button class="primary" data-type="daily">Codzienne</button>
     <button class="primary" data-type="fun">Przyjemność</button>
+    <button class="primary" data-type="goals">Cel / wakacje</button>
   </div>
   <button id="qCancel" class="link-btn">Anuluj</button>
+</dialog>
+
+<dialog id="edit">
+  <h2 id="eTitle">Edytuj</h2>
+  <input id="eName" type="text" placeholder="Nazwa" maxlength="40">
+  <input id="eAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Kwota (zł)">
+  <div id="eDayWrap"><input id="eDay" type="number" min="1" max="31" inputmode="numeric" placeholder="Dzień płatności"></div>
+  <select id="eType" aria-label="Kategoria"></select>
+  <button id="eSave" class="primary">Zapisz zmiany</button>
+  <button id="eCancel" class="link-btn">Anuluj</button>
 </dialog>
 
 <script src="app.js"></script>
