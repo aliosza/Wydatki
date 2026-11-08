@@ -16,6 +16,7 @@ Prosta aplikacja do pilnowania budżetu i hamowania impulsywnych zakupów. Czyst
 - **Seria dni bez impulsu** i krótkie podsumowanie (przyjemności, uratowane kwoty, najdroższy tydzień).
 - **Ustawienia komfortu:** spokojne kolory bez czerwieni, większa czcionka, brak animacji.
 - **Stałe opłaty i cele:** dodajesz pozycje raz (nazwa, kwota, dzień płatności), odznaczasz po zapłaceniu, a aplikacja pokazuje sumy względem puli i oznacza zaległe. Karta „Na co idą pieniądze" podsumowuje opłaty i wydatki na paskach.
+- **Wakacje i inne cele:** wydatki typu „Cel specjalny" nie zjadają tygodniowej puli, tylko liczą się do puli celów. Każdy wydatek i opłatę można edytować przyciskiem „Edytuj".
 - **Kopia danych:** eksport i import pliku JSON oraz przycisk „Zacznij nowy miesiąc".
 
 Prawdziwe powiadomienia push nie są jeszcze zaimplementowane, bo wymagają PWA z service workerem.
@@ -24,6 +25,7 @@ Prawdziwe powiadomienia push nie są jeszcze zaimplementowane, bo wymagają PWA 
 
 ```
 index.html   struktura strony
+icon.svg, icon-192.png, icon-512.png, apple-touch-icon.png, manifest.webmanifest   ikona i dane do dodania na ekran główny
 style.css    wygląd, motywy jasny i ciemny
 app.js       logika i zapis danych
 README.md    ta instrukcja
