@@ -89,7 +89,7 @@ $('income').addEventListener('input', () => { state.income = num($('income').val
 
 /* ---------- Tygodnie ---------- */
 const weekPool = () => state.income * (state.pct.daily + state.pct.fun) / 100 / 4;
-const weekSpent = (w) => state.spends.filter((s) => s.week === w).reduce((a, s) => a + s.amount, 0);
+const weekSpent = (w) => state.spends.filter((s) => s.week === w && s.type !== 'goals').reduce((a, s) => a + s.amount, 0);
 
 function buildWeekPicker() {
   const box = $('weekPicker');
@@ -120,11 +120,11 @@ function renderWeek() {
   const list = $('spList'); list.replaceChildren();
   state.spends.filter((s) => s.week === w).reverse().forEach((s) => {
     const li = el('li');
-    li.append(el('span', `${s.note || 'Wydatek'} (${s.type === 'fun' ? 'przyjemność' : 'codzienne'})`));
+    li.append(el('span', `${s.note || 'Wydatek'} (${TYPE_LABEL[s.type] || s.type})`));
     const right = el('span'); right.append(el('span', zl(s.amount) + ' '));
     const del = el('button', 'Usuń', 'link-btn');
     del.addEventListener('click', () => { state.spends = state.spends.filter((x) => x.id !== s.id); save(); renderWeek(); });
-    right.append(del); li.append(right); list.append(li);
+    right.append(editBtn('spend', s), del); li.append(right); list.append(li);
   });
   renderExtras();
 }
@@ -299,12 +299,13 @@ function renderBills() {
     const right = el('span'); right.append(el('span', zl(b.amount) + ' '));
     const del = el('button', 'Usuń', 'link-btn');
     del.addEventListener('click', () => { state.bills = state.bills.filter((x) => x.id !== b.id); save(); renderExtras(); });
-    right.append(del); li.append(lab, right); list.append(li);
+    right.append(editBtn('bill', b), del); li.append(lab, right); list.append(li);
   });
   const lines = [['fixed', 'Stałe opłaty'], ['goals', 'Cele specjalne']].map(([k, name]) => {
     const items = state.bills.filter((b) => b.kind === k);
-    if (!items.length) return '';
-    const sum = items.reduce((a, b) => a + b.amount, 0), paid = items.filter((b) => b.paid).reduce((a, b) => a + b.amount, 0);
+    if (!items.length && !(k === 'goals' && state.spends.some((s) => s.type === 'goals'))) return '';
+    const extra = k === 'goals' ? state.spends.filter((s) => s.type === 'goals').reduce((a, s) => a + s.amount, 0) : 0;
+    const sum = items.reduce((a, b) => a + b.amount, 0) + extra, paid = items.filter((b) => b.paid).reduce((a, b) => a + b.amount, 0) + extra;
     const pool = state.income * state.pct[k] / 100;
     return `${name}: ${zl(sum)} z puli ${zl(pool)}, do zapłacenia jeszcze ${zl(sum - paid)}.` + (sum > pool ? ` Pozycje przekraczają pulę o ${zl(sum - pool)}.` : '');
   }).filter(Boolean);
@@ -315,7 +316,7 @@ function renderBills() {
 function renderFlow() {
   const bills = (k) => state.bills.filter((b) => b.kind === k).reduce((a, b) => a + b.amount, 0);
   const spent = (t) => state.spends.filter((s) => s.type === t).reduce((a, s) => a + s.amount, 0);
-  const rows = [['Stałe opłaty', bills('fixed'), 'var(--pink)'], ['Cele specjalne', bills('goals'), 'var(--blue)'],
+  const rows = [['Stałe opłaty', bills('fixed'), 'var(--pink)'], ['Cele specjalne', bills('goals') + spent('goals'), 'var(--blue)'],
                 ['Codzienne życie', spent('daily'), 'var(--orange)'], ['Przyjemności', spent('fun'), 'var(--mint)']];
   const total = rows.reduce((a, r) => a + r[1], 0), base = Math.max(state.income, total) || 1;
   const box = $('flow'); box.replaceChildren();
@@ -330,6 +331,40 @@ function renderFlow() {
     box.append(el('p', left >= 0 ? `Zostaje z wypłaty: ${zl(left)}` : `Wydatki przekraczają wypłatę o ${zl(-left)}`, 'msg' + (left < 0 ? ' danger' : '')));
   }
 }
+
+/* ---------- Edycja wydatków i opłat ---------- */
+const TYPE_LABEL = { daily: 'codzienne', fun: 'przyjemność', goals: 'cel' };
+const editDlg = $('edit'); let editing = null;
+
+function editBtn(kind, item) {
+  const b = el('button', 'Edytuj', 'link-btn');
+  b.addEventListener('click', () => openEdit(kind, item));
+  return b;
+}
+function openEdit(kind, item) {
+  editing = { kind, item };
+  $('eTitle').textContent = kind === 'bill' ? 'Edytuj opłatę' : 'Edytuj wydatek';
+  $('eName').value = kind === 'bill' ? item.name : (item.note || '');
+  $('eAmount').value = item.amount;
+  $('eDayWrap').hidden = kind !== 'bill'; $('eDay').value = item.day || '';
+  const opts = kind === 'bill'
+    ? [['fixed', 'Stała opłata'], ['goals', 'Cel specjalny']]
+    : [['daily', 'Codzienne życie'], ['fun', 'Przyjemność'], ['goals', 'Cel specjalny (np. wakacje)']];
+  const sel = $('eType'); sel.replaceChildren();
+  opts.forEach(([v, l]) => { const o = el('option', l); o.value = v; sel.append(o); });
+  sel.value = kind === 'bill' ? item.kind : item.type;
+  editDlg.showModal();
+}
+$('eCancel').addEventListener('click', () => editDlg.close());
+$('eSave').addEventListener('click', () => {
+  const amount = num($('eAmount').value);
+  if (!amount) return $('eAmount').focus();
+  const { kind, item } = editing, name = $('eName').value.trim();
+  item.amount = amount;
+  if (kind === 'bill') { item.name = name || item.name; item.day = Math.min(31, Math.round(num($('eDay').value))) || 0; item.kind = $('eType').value; }
+  else { item.note = name; item.type = $('eType').value; }
+  save(); editDlg.close(); renderWeek();
+});
 
 /* ---------- Ustawienia komfortu ---------- */
 [['calm', 'uiCalm'], ['large', 'uiLarge'], ['still', 'uiStill']].forEach(([k, id]) => {
