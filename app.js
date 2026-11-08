@@ -14,6 +14,7 @@ const defaults = {
   wishes: [],   // {id, name, price, link, unlockAt}
   rescued: 0,   // suma zachcianek, z których zrezygnowano
   freeDays: [], // dni oznaczone jako "nic nie kupiono" (RRRR-MM-DD)
+  bills: [],    // stałe opłaty i cele: {id, name, amount, day, kind: 'fixed'|'goals', paid}
   ui: { calm: false, large: false, still: false },
 };
 let state = load();
@@ -270,6 +271,64 @@ function renderExtras() {
   if (hardest[1] > 0) rows.push(`Najdroższy tydzień: ${hardest[0]} (${zl(hardest[1])})`);
   const ul = $('summary'); ul.replaceChildren();
   rows.forEach((r) => ul.append(el('li', r)));
+  renderBills(); renderFlow();
+}
+
+/* ---------- Stałe opłaty i cele ---------- */
+$('bAdd').addEventListener('click', () => {
+  const name = $('bName').value.trim(), amount = num($('bAmount').value);
+  if (!name) return $('bName').focus();
+  if (!amount) return $('bAmount').focus();
+  const day = Math.min(31, Math.round(num($('bDay').value))) || 0;
+  state.bills.push({ id: uid(), name, amount, day, kind: $('bKind').value, paid: false });
+  ['bName', 'bAmount', 'bDay'].forEach((id) => { $(id).value = ''; });
+  save(); renderExtras();
+});
+
+function renderBills() {
+  const list = $('bList'); list.replaceChildren();
+  const today = new Date().getDate();
+  [...state.bills].sort((a, b) => (a.day || 99) - (b.day || 99)).forEach((b) => {
+    const li = el('li');
+    const lab = el('label', undefined, 'chk' + (b.paid ? ' paid' : ''));
+    const cb = el('input'); cb.type = 'checkbox'; cb.checked = b.paid;
+    cb.addEventListener('change', () => { b.paid = cb.checked; save(); renderExtras(); });
+    const late = !b.paid && b.day && b.day < today;
+    lab.append(cb, el('span', `${b.name}${b.day ? ` (do ${b.day}.)` : ''}${b.kind === 'goals' ? ' (cel)' : ''}${late ? ' po terminie' : ''}`));
+    if (late) lab.classList.add('late');
+    const right = el('span'); right.append(el('span', zl(b.amount) + ' '));
+    const del = el('button', 'Usuń', 'link-btn');
+    del.addEventListener('click', () => { state.bills = state.bills.filter((x) => x.id !== b.id); save(); renderExtras(); });
+    right.append(del); li.append(lab, right); list.append(li);
+  });
+  const lines = [['fixed', 'Stałe opłaty'], ['goals', 'Cele specjalne']].map(([k, name]) => {
+    const items = state.bills.filter((b) => b.kind === k);
+    if (!items.length) return '';
+    const sum = items.reduce((a, b) => a + b.amount, 0), paid = items.filter((b) => b.paid).reduce((a, b) => a + b.amount, 0);
+    const pool = state.income * state.pct[k] / 100;
+    return `${name}: ${zl(sum)} z puli ${zl(pool)}, do zapłacenia jeszcze ${zl(sum - paid)}.` + (sum > pool ? ` Pozycje przekraczają pulę o ${zl(sum - pool)}.` : '');
+  }).filter(Boolean);
+  $('bSummary').textContent = lines.join(' ') || 'Brak pozycji.';
+}
+
+/* Przegląd: na co faktycznie idą pieniądze (opłaty + wydatki z tygodni) */
+function renderFlow() {
+  const bills = (k) => state.bills.filter((b) => b.kind === k).reduce((a, b) => a + b.amount, 0);
+  const spent = (t) => state.spends.filter((s) => s.type === t).reduce((a, s) => a + s.amount, 0);
+  const rows = [['Stałe opłaty', bills('fixed'), 'var(--pink)'], ['Cele specjalne', bills('goals'), 'var(--blue)'],
+                ['Codzienne życie', spent('daily'), 'var(--orange)'], ['Przyjemności', spent('fun'), 'var(--mint)']];
+  const total = rows.reduce((a, r) => a + r[1], 0), base = Math.max(state.income, total) || 1;
+  const box = $('flow'); box.replaceChildren();
+  rows.forEach(([name, val, color]) => {
+    const r = el('div', undefined, 'flow-row');
+    r.append(el('span', name), el('span', zl(val) + (state.income ? ` (${Math.round(val / base * 100)}%)` : '')));
+    const bar = el('div', undefined, 'bar'), f = el('div');
+    f.style.width = (val / base * 100) + '%'; f.style.background = color; bar.append(f); box.append(r, bar);
+  });
+  if (state.income) {
+    const left = state.income - total;
+    box.append(el('p', left >= 0 ? `Zostaje z wypłaty: ${zl(left)}` : `Wydatki przekraczają wypłatę o ${zl(-left)}`, 'msg' + (left < 0 ? ' danger' : '')));
+  }
 }
 
 /* ---------- Ustawienia komfortu ---------- */
@@ -294,8 +353,8 @@ $('imp').addEventListener('change', async (e) => {
   } catch { alert('To nie jest poprawny plik kopii z tej aplikacji.'); }
 });
 $('newMonth').addEventListener('click', () => {
-  if (!confirm('Wyczyścić wydatki i dni bez zakupów? Zachcianki i uratowana kwota zostają. Zrób wcześniej eksport.')) return;
-  state.spends = []; state.freeDays = []; save(); renderWeek(); renderDashboard();
+  if (!confirm('Wyczyścić wydatki i dni bez zakupów oraz odznaczyć opłaty jako niezapłacone? Opłaty, zachcianki i uratowana kwota zostają. Zrób wcześniej eksport.')) return;
+  state.spends = []; state.freeDays = []; state.bills.forEach((b) => { b.paid = false; }); save(); renderWeek(); renderDashboard();
 });
 
 /* ---------- Start ---------- */
