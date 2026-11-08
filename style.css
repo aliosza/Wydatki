@@ -201,3 +201,6 @@ dialog { border: 2px solid var(--edge); border-radius: 18px; box-shadow: 6px 6px
 .chk.late span { color: var(--warn); font-weight: 600; }
 .flow-row { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; font-weight: 600; }
 .flow-row + .bar { margin: 4px 0 0; }
+
+#quick .primary { font-size: .9rem; padding: 10px 4px; }
+#eDayWrap[hidden] { display: none; }
