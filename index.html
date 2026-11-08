@@ -41,12 +41,36 @@
       <div id="split"></div>
     </div>
 
+    <div class="card">
+      <h2>Stałe opłaty i cele</h2>
+      <p class="hint">Dodaj raz (kredyt, internet, prezenty). Pozycje zostają na kolejne miesiące.</p>
+      <div class="row">
+        <input id="bName" type="text" placeholder="Nazwa (np. kredyt)" maxlength="40">
+        <input id="bAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Kwota (zł)">
+      </div>
+      <div class="row">
+        <input id="bDay" type="number" min="1" max="31" inputmode="numeric" placeholder="Dzień płatności">
+        <select id="bKind" aria-label="Rodzaj pozycji">
+          <option value="fixed">Stała opłata</option>
+          <option value="goals">Cel specjalny</option>
+        </select>
+      </div>
+      <button id="bAdd" class="primary">Dodaj pozycję</button>
+      <ul id="bList" class="list"></ul>
+      <p id="bSummary" class="hint"></p>
+    </div>
+
     <div class="card savings">
       <span class="label">Do odłożenia</span>
       <strong id="savingsAmount">0 zł</strong>
       <span id="savingsPct" class="hint"></span>
       <span class="label">Uratowane przed impulsem</span>
       <strong id="rescued" class="rescued">0 zł</strong>
+    </div>
+
+    <div class="card">
+      <h2>Na co idą pieniądze</h2>
+      <div id="flow"></div>
     </div>
 
     <div class="card">
