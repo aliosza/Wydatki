@@ -15,6 +15,7 @@ Prosta aplikacja do pilnowania budżetu i hamowania impulsywnych zakupów. Czyst
 - **Wieczorny baner:** po 18:00, jeśli nic jeszcze nie wpisano, pyta o dzisiejsze zakupy. „Nic dziś nie kupiono" też liczy się do serii.
 - **Seria dni bez impulsu** i krótkie podsumowanie (przyjemności, uratowane kwoty, najdroższy tydzień).
 - **Ustawienia komfortu:** spokojne kolory bez czerwieni, większa czcionka, brak animacji.
+- **Stałe opłaty i cele:** dodajesz pozycje raz (nazwa, kwota, dzień płatności), odznaczasz po zapłaceniu, a aplikacja pokazuje sumy względem puli i oznacza zaległe. Karta „Na co idą pieniądze" podsumowuje opłaty i wydatki na paskach.
 - **Kopia danych:** eksport i import pliku JSON oraz przycisk „Zacznij nowy miesiąc".
 
 Prawdziwe powiadomienia push nie są jeszcze zaimplementowane, bo wymagają PWA z service workerem.
