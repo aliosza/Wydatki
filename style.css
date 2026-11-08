@@ -1,29 +1,31 @@
-/* ===== Zmienne kolorów (tryb jasny domyślnie) ===== */
+/* ===== Paleta "dopamine": jaskrawe kolory, głęboki indygo jako tekst ===== */
 :root {
-  --bg: #f1f5f4;
+  --bg: #ffeaf6;          /* jasny róż */
   --card: #ffffff;
-  --ink: #17302d;
-  --muted: #5d7673;
-  --line: #d9e3e1;
-  --accent: #0f766e;      /* spokojny morski */
+  --ink: #25104f;         /* głęboki indygo (tekst) */
+  --muted: #6b5a8e;
+  --line: #e6d8fa;        /* delikatne separatory */
+  --edge: #25104f;        /* kontury kart */
+  --accent: #6d3aee;      /* fiolet */
   --accent-ink: #ffffff;
-  --warn: #b45309;
-  --danger: #b91c1c;
-  --ok: #15803d;
+  --warn: #c2410c;
+  --danger: #d6246e;
+  --ok: #087f5b;
+  --pink: #ff4fa3; --orange: #ff9f1c; --yellow: #ffd93d; --blue: #3b82f6; --mint: #2dd4bf;
+  --fixed-ink: #25104f;   /* tekst na jaskrawych tłach, w obu motywach */
   color-scheme: light;
 }
-/* Tryb ciemny: ręcznie (data-theme) lub wg systemu, gdy użytkownik nic nie wybrał */
 :root[data-theme="dark"] {
-  --bg: #0f1c1b; --card: #172a28; --ink: #e6f1ef; --muted: #8fb0ab;
-  --line: #264240; --accent: #3fc1b3; --accent-ink: #072320;
-  --warn: #f0a24b; --danger: #f27c7c; --ok: #6fd391;
+  --bg: #1a0b3d; --card: #2a1560; --ink: #fff3ff; --muted: #c0aeea;
+  --line: #4a2f8f; --edge: #ff7ac6; --accent: #ff7ac6; --accent-ink: #25104f;
+  --warn: #ffb84d; --danger: #ff7a9c; --ok: #5ef2b5;
   color-scheme: dark;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f1c1b; --card: #172a28; --ink: #e6f1ef; --muted: #8fb0ab;
-    --line: #264240; --accent: #3fc1b3; --accent-ink: #072320;
-    --warn: #f0a24b; --danger: #f27c7c; --ok: #6fd391;
+    --bg: #1a0b3d; --card: #2a1560; --ink: #fff3ff; --muted: #c0aeea;
+    --line: #4a2f8f; --edge: #ff7ac6; --accent: #ff7ac6; --accent-ink: #25104f;
+    --warn: #ffb84d; --danger: #ff7a9c; --ok: #5ef2b5;
     color-scheme: dark;
   }
 }
@@ -139,3 +141,56 @@ dialog::backdrop { background: rgba(0, 0, 0, .45); }
 .chk { display: flex; align-items: center; margin-bottom: 8px; color: var(--ink); font-size: 1rem; }
 .chk input { width: auto; margin: 0 10px 0 0; }
 .filebtn { text-align: center; margin: 0 0 8px; padding: 6px 12px; cursor: pointer; }
+
+/* ===== Styl dopamine: kolory, grube kontury, kolorowe cienie ===== */
+body { background: var(--bg); }
+h1 {
+  font-size: 1.6rem; font-weight: 800;
+  background: linear-gradient(90deg, var(--pink), #7b3ff2, var(--blue));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.card { border: 2px solid var(--edge); border-radius: 18px; box-shadow: 4px 4px 0 var(--pink); }
+.panel .card:nth-of-type(4n+2) { box-shadow: 4px 4px 0 var(--orange); }
+.panel .card:nth-of-type(4n+3) { box-shadow: 4px 4px 0 var(--blue); }
+.panel .card:nth-of-type(4n+4) { box-shadow: 4px 4px 0 var(--mint); }
+input, select { border: 2px solid var(--line); border-radius: 12px; background: var(--bg); }
+input:focus, select:focus { border-color: var(--accent); }
+
+.tab { border: 2px solid var(--edge); border-radius: 14px; font-weight: 700; color: var(--ink); }
+.tab.active { color: var(--fixed-ink); box-shadow: 0 3px 0 var(--edge); }
+.tab[data-tab="pulpit"].active { background: var(--pink); border-color: var(--edge); }
+.tab[data-tab="tygodnie"].active { background: var(--yellow); border-color: var(--edge); }
+.tab[data-tab="zachcianki"].active { background: var(--mint); border-color: var(--edge); }
+
+button.primary {
+  border: 2px solid var(--edge); border-radius: 12px; box-shadow: 0 3px 0 var(--edge);
+  transition: transform .08s, box-shadow .08s;
+}
+button.primary:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.wish .btns button:last-child { background: var(--yellow); color: var(--fixed-ink); }
+
+.panic {
+  background: var(--yellow); color: var(--fixed-ink); border: 2px solid var(--edge);
+  border-radius: 16px; box-shadow: 0 4px 0 var(--edge); font-size: 1.05rem;
+}
+.panic:active { transform: translateY(4px); box-shadow: none; }
+.fab {
+  background: var(--orange); color: var(--fixed-ink); border: 2px solid var(--edge);
+  box-shadow: 0 4px 0 var(--edge); font-weight: 800;
+}
+
+.weeks button { border: 2px solid var(--edge); border-radius: 12px; color: var(--ink); font-weight: 700; }
+.weeks button.active { background: var(--yellow); color: var(--fixed-ink); box-shadow: 0 3px 0 var(--edge); }
+.big { color: var(--accent); font-weight: 800; }
+.savings strong { font-weight: 800; }
+.rescued { color: var(--accent); }
+
+.bar { height: 18px; background: var(--bg); border: 2px solid var(--edge); }
+.bar div { background: linear-gradient(90deg, var(--mint), var(--blue)); }
+.bar.warn div { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+.bar.danger div { background: var(--pink); }
+
+.list li.wish { border: 2px solid var(--edge); border-radius: 18px; box-shadow: 4px 4px 0 var(--blue); }
+.timer { font-weight: 800; }
+button.ghost { border: 2px solid var(--edge); color: var(--ink); font-weight: 600; }
+dialog { border: 2px solid var(--edge); border-radius: 18px; box-shadow: 6px 6px 0 var(--pink); }
