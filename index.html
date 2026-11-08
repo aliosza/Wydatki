@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spokojny budżet</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <h1>Spokojny budżet</h1>
+  <button id="themeBtn" class="ghost" aria-label="Przełącz tryb jasny/ciemny">Tryb</button>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="pulpit" role="tab">Pulpit</button>
+  <button class="tab" data-tab="tygodnie" role="tab">Tygodnie</button>
+  <button class="tab" data-tab="zachcianki" role="tab">Chcę to kupić</button>
+</nav>
+
+<button id="panic" class="panic">Mam ochotę kupić TERAZ</button>
+
+<main>
+  <!-- PULPIT -->
+  <section id="pulpit" class="panel active">
+    <div class="card" id="eveningCard" hidden>
+      <h2>Czy dziś było coś do wpisania?</h2>
+      <div class="row">
+        <button id="evNone" class="primary">Nic dziś nie kupiono</button>
+        <button id="evAdd" class="primary">Dodaj wydatek</button>
+      </div>
+    </div>
+    <div class="card">
+      <label for="income">Wypłata w tym miesiącu (zł)</label>
+      <input id="income" type="number" min="0" step="1" inputmode="decimal" placeholder="np. 5000">
+    </div>
+
+    <div class="card">
+      <h2>Podział wypłaty</h2>
+      <p class="hint">Zmień procenty. Reszta automatycznie trafia do oszczędności.</p>
+      <div id="split"></div>
+    </div>
+
+    <div class="card savings">
+      <span class="label">Do odłożenia</span>
+      <strong id="savingsAmount">0 zł</strong>
+      <span id="savingsPct" class="hint"></span>
+      <span class="label">Uratowane przed impulsem</span>
+      <strong id="rescued" class="rescued">0 zł</strong>
+    </div>
+
+    <div class="card">
+      <span class="label">Seria dni bez impulsu</span>
+      <strong id="streak" class="rescued">0</strong>
+      <ul id="summary" class="list"></ul>
+    </div>
+
+    <div class="card">
+      <h2>Ustawienia komfortu</h2>
+      <label class="chk"><input type="checkbox" id="uiCalm"> Spokojne kolory (bez czerwieni)</label>
+      <label class="chk"><input type="checkbox" id="uiLarge"> Większa czcionka</label>
+      <label class="chk"><input type="checkbox" id="uiStill"> Bez animacji</label>
+    </div>
+
+    <div class="card">
+      <h2>Kopia danych</h2>
+      <div class="row">
+        <button id="exp" class="ghost">Eksportuj</button>
+        <label class="ghost filebtn">Importuj<input type="file" id="imp" accept="application/json" hidden></label>
+      </div>
+      <button id="newMonth" class="link-btn">Zacznij nowy miesiąc (czyści wydatki)</button>
+    </div>
+  </section>
+
+  <!-- TYGODNIE -->
+  <section id="tygodnie" class="panel">
+    <div class="weeks" id="weekPicker"></div>
+    <div class="card">
+      <span class="label" id="weekTitle"></span>
+      <strong id="weekLeft" class="big">0 zł</strong>
+      <div class="bar"><div id="weekBar"></div></div>
+      <p id="weekMsg" class="msg"></p>
+    </div>
+    <div class="card">
+      <h2>Dodaj wydatek</h2>
+      <div class="row">
+        <input id="spAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Kwota">
+        <input id="spNote" type="text" placeholder="Na co?" maxlength="40">
+      </div>
+      <div class="row">
+        <select id="spType">
+          <option value="daily">Codzienne życie</option>
+          <option value="fun">Przyjemność</option>
+        </select>
+        <button id="spAdd" class="primary">Dodaj wydatek</button>
+      </div>
+      <ul id="spList" class="list"></ul>
+    </div>
+  </section>
+
+  <!-- ZACHCIANKI -->
+  <section id="zachcianki" class="panel">
+    <div class="card">
+      <h2>Chcę to kupić</h2>
+      <p class="hint">Wpisz zachciankę. Przycisk zakupu odblokuje się po upływie czasu.</p>
+      <input id="wName" type="text" placeholder="Co chcesz kupić?" maxlength="60">
+      <div class="row">
+        <input id="wPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Cena (zł)">
+        <select id="wLock">
+          <option value="48">Blokada 48 godzin</option>
+          <option value="168">Blokada 7 dni</option>
+        </select>
+      </div>
+      <p id="wEffort" class="hint"></p>
+      <select id="wReason" aria-label="Czego teraz potrzebujesz?">
+        <option>Nuda</option><option>Stres lub smutek</option>
+        <option>Nagroda dla siebie</option><option>Naprawdę tego potrzebuję</option>
+      </select>
+      <select id="wWant" aria-label="Jak mocno tego chcesz">
+        <option value="1">Chęć 1 z 5</option><option value="2">Chęć 2 z 5</option>
+        <option value="3" selected>Chęć 3 z 5</option><option value="4">Chęć 4 z 5</option>
+        <option value="5">Chęć 5 z 5</option>
+      </select>
+      <input id="wLink" type="url" placeholder="Link (opcjonalnie)">
+      <button id="wAdd" class="primary">Zablokuj na czas</button>
+    </div>
+    <ul id="wList" class="list"></ul>
+  </section>
+</main>
+
+<button id="fab" class="fab" aria-label="Szybki wydatek">+</button>
+<dialog id="quick">
+  <h2>Szybki wydatek</h2>
+  <input id="qAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Kwota (zł)">
+  <div class="row">
+    <button class="primary" data-type="daily">Codzienne</button>
+    <button class="primary" data-type="fun">Przyjemność</button>
+  </div>
+  <button id="qCancel" class="link-btn">Anuluj</button>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+/* ===== Zmienne kolorów (tryb jasny domyślnie) ===== */
+:root {
+  --bg: #f1f5f4;
+  --card: #ffffff;
+  --ink: #17302d;
+  --muted: #5d7673;
+  --line: #d9e3e1;
+  --accent: #0f766e;      /* spokojny morski */
+  --accent-ink: #ffffff;
+  --warn: #b45309;
+  --danger: #b91c1c;
+  --ok: #15803d;
+  color-scheme: light;
+}
+/* Tryb ciemny: ręcznie (data-theme) lub wg systemu, gdy użytkownik nic nie wybrał */
+:root[data-theme="dark"] {
+  --bg: #0f1c1b; --card: #172a28; --ink: #e6f1ef; --muted: #8fb0ab;
+  --line: #264240; --accent: #3fc1b3; --accent-ink: #072320;
+  --warn: #f0a24b; --danger: #f27c7c; --ok: #6fd391;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1c1b; --card: #172a28; --ink: #e6f1ef; --muted: #8fb0ab;
+    --line: #264240; --accent: #3fc1b3; --accent-ink: #072320;
+    --warn: #f0a24b; --danger: #f27c7c; --ok: #6fd391;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  max-width: 560px; margin-inline: auto; padding: 16px 16px 48px;
+}
+h1 { font-size: 1.4rem; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 1.05rem; margin: 0 0 8px; }
+.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+
+/* ===== Zakładki ===== */
+.tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+.tab {
+  flex: 1; padding: 10px 6px; border: 1px solid var(--line); background: var(--card);
+  color: var(--muted); border-radius: 10px; font: inherit; cursor: pointer;
+}
+.tab.active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ===== Karty i pola ===== */
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 16px; margin-bottom: 14px;
+}
+label, .label { display: block; color: var(--muted); font-size: .9rem; margin-bottom: 4px; }
+.hint { color: var(--muted); font-size: .88rem; margin: 0 0 8px; }
+input, select {
+  width: 100%; padding: 11px 12px; margin-bottom: 8px; font: inherit; color: var(--ink);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+}
+.row { display: flex; gap: 8px; }
+.row > * { flex: 1; min-width: 0; }
+button { font: inherit; }
+button.primary {
+  width: 100%; padding: 11px; margin-bottom: 8px; border: 0; border-radius: 10px;
+  background: var(--accent); color: var(--accent-ink); font-weight: 600; cursor: pointer;
+}
+button.primary:disabled { opacity: .4; cursor: not-allowed; }
+button.ghost {
+  background: none; border: 1px solid var(--line); color: var(--muted);
+  border-radius: 10px; padding: 6px 12px; cursor: pointer;
+}
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ===== Podział wypłaty ===== */
+.split-row { display: grid; grid-template-columns: 1fr 72px 90px; gap: 8px; align-items: center; }
+.split-row input { margin: 0 0 8px; text-align: right; }
+.split-row .amt { text-align: right; font-variant-numeric: tabular-nums; margin-bottom: 8px; }
+.savings strong { display: block; font-size: 2rem; color: var(--ok); line-height: 1.2; }
+.savings .rescued { font-size: 1.3rem; color: var(--accent); }
+.savings .label:not(:first-child) { margin-top: 12px; }
+
+/* ===== Tygodnie ===== */
+.weeks { display: flex; gap: 6px; margin-bottom: 14px; }
+.weeks button {
+  flex: 1; padding: 9px 0; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--card); color: var(--muted); cursor: pointer;
+}
+.weeks button.active { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+.big { display: block; font-size: 2.4rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.bar { height: 12px; background: var(--bg); border-radius: 99px; overflow: hidden; margin: 12px 0 8px; }
+.bar div { height: 100%; width: 0; background: var(--ok); transition: width .3s, background .3s; }
+.bar.warn div { background: var(--warn); }
+.bar.danger div { background: var(--over); }
+.msg { margin: 0; font-weight: 600; }
+.msg.warn { color: var(--warn); }
+.msg.danger { color: var(--over); }
+
+/* ===== Listy ===== */
+.list { list-style: none; padding: 0; margin: 0; }
+.list li {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 8px 0; border-top: 1px solid var(--line);
+}
+.list li:first-child { border-top: 0; }
+.wish { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.wish .head { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+.wish a { color: var(--accent); font-size: .9rem; }
+.timer { font-size: 1.6rem; font-variant-numeric: tabular-nums; color: var(--warn); margin: 6px 0; }
+.timer.done { color: var(--ok); }
+.wish .btns { display: flex; gap: 8px; }
+.wish .btns button { flex: 1; margin: 0; }
+.link-btn { background: none; border: 0; color: var(--muted); cursor: pointer; text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ===== Dodatki: kolor przekroczenia, panika, szybki wydatek, ustawienia ===== */
+html { --over: var(--danger); }
+html.calm { --over: var(--warn); }              /* tryb spokojny: bez czerwieni */
+html.large body { font-size: 19px; }
+html.still * { transition: none !important; }
+.list li.wish { display: block; padding: 14px; border: 1px solid var(--line); }
+.wish p { margin: 4px 0; }
+.panic {
+  width: 100%; padding: 14px; margin-bottom: 14px; cursor: pointer; font-weight: 700;
+  border: 2px solid var(--accent); background: var(--card); color: var(--accent); border-radius: 12px;
+}
+.fab {
+  position: fixed; right: 18px; bottom: 18px; width: 56px; height: 56px; border: 0; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink); font-size: 1.8rem; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .25);
+}
+dialog {
+  width: min(92vw, 420px); padding: 16px; border: 1px solid var(--line); border-radius: 14px;
+  background: var(--card); color: var(--ink);
+}
+dialog::backdrop { background: rgba(0, 0, 0, .45); }
+.chk { display: flex; align-items: center; margin-bottom: 8px; color: var(--ink); font-size: 1rem; }
+.chk input { width: auto; margin: 0 10px 0 0; }
+.filebtn { text-align: center; margin: 0 0 8px; padding: 6px 12px; cursor: pointer; }
